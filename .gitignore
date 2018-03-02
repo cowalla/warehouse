@@ -1,1 +1,4 @@
 .idea
+venv/
+*.pyc
+db.sqlite3
