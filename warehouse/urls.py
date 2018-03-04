@@ -16,6 +16,19 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from markets import views
+
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(
+        r'^ticker/$',
+        views.currency_ticker,
+        name='markets_ticker'
+    ),
+        url(
+        r'^ticker/update/$',
+        views.update_currency_ticker,
+        name='markets_ticker_update'
+    ),
 ]
