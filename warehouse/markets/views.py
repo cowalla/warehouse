@@ -1,6 +1,6 @@
 from django.http import JsonResponse, Http404
 
-from warehouse.markets.models import CurrencyTicker, MARKETS
+from warehouse.markets.models import CurrencyTicker
 
 
 def currency_ticker(request):
@@ -8,27 +8,18 @@ def currency_ticker(request):
     before = request.GET.get('before')
     after = request.GET.get('after')
     currency_pair = request.GET.get('currency_pair')
-    tickers = CurrencyTicker.objects.filter(exchange=MARKETS[exchange])
+    tickers = CurrencyTicker.objects.filter(exchange=exchange)
 
-    if currency_pair is not None:
+    if currency_pair:
         tickers = tickers.filter(currency_pair=currency_pair)
-    if before is not None:
+    if before:
         tickers = tickers.filter(updated__lte=before)
-    if after is not None:
+    if after:
         tickers = tickers.filter(updated__gte=after)
 
     data = [
-        t.as_json()
+        t.as_dict()
         for t in tickers
     ]
 
     return JsonResponse(data, safe=False)
-
-
-def update_currency_ticker(request):
-    if not request.user.is_authenticated():
-        raise Http404()
-
-
-
-    return JsonResponse({})
