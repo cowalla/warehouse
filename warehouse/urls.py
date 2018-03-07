@@ -26,9 +26,4 @@ urlpatterns = [
         views.currency_ticker,
         name='markets_ticker'
     ),
-        url(
-        r'^ticker/update/$',
-        views.update_currency_ticker,
-        name='markets_ticker_update'
-    ),
 ]

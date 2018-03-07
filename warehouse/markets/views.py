@@ -1,6 +1,6 @@
 from django.http import JsonResponse, Http404
 
-from warehouse.markets.models import CurrencyTicker
+from warehouse.markets.models import CurrencyTicker, MARKETS
 
 
 def currency_ticker(request):
@@ -8,7 +8,7 @@ def currency_ticker(request):
     before = request.GET.get('before')
     after = request.GET.get('after')
     currency_pair = request.GET.get('currency_pair')
-    tickers = CurrencyTicker.objects.filter(exchange=exchange)
+    tickers = CurrencyTicker.objects.filter(exchange=MARKETS[exchange])
 
     if currency_pair:
         tickers = tickers.filter(currency_pair=currency_pair)

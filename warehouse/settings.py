@@ -37,6 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'warehouse',
     'warehouse.markets',
+    'djcelery',
+    'kombu.transport.django',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -75,7 +77,6 @@ WSGI_APPLICATION = 'warehouse.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-
 import os
 IS_PRODUCTION = os.environ.get('IS_PRODUCTION', False) == 'true'
 DATABASE_PORT = '5432'
@@ -101,7 +102,6 @@ if IS_PRODUCTION:
         'PORT': DATABASE_PORT,
     }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -121,6 +121,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+# Crypto mediator client
 
 from crypto_mediator import CryptoMediator
 
@@ -143,4 +145,13 @@ kwargs = {
 }
 
 METACLIENT = CryptoMediator(**kwargs)
+
+
+# Celery
+
+import djcelery
+djcelery.setup_loader()
+BROKER_URL = 'django://'
+
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
