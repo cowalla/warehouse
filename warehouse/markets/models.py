@@ -31,7 +31,7 @@ class CurrencyTicker(models.Model):
     def as_dict(self):
         return {
             'currency_pair': self.currency_pair,
-            'exchange': self.exchange,
+            'exchange': MARKETS[self.exchange],
             'average': self.average,
             'base_volume': self.base_volume,
             'current_volume': self.current_volume,

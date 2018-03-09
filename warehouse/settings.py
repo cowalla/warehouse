@@ -126,17 +126,30 @@ STATIC_URL = '/static/'
 
 from crypto_mediator import CryptoMediator
 
-from crypto_mediator.secret import (
-    BITTREX_API_KEY, BITTREX_API_SECRET,
-    COINBASE_API_KEY, COINBASE_API_SECRET,
-    GATECOIN_API_KEY, GATECOIN_API_SECRET,
-    GDAX_API_KEY, GDAX_API_SECRET, GDAX_PASSPHRASE,
-    LIQUI_API_KEY, LIQUI_API_SECRET,
-    POLONIEX_API_KEY, POLONIEX_API_SECRET,
-)
-
+# present in secret.sh at project level
+secret_keys = [
+    "BITTREX_API_KEY",
+    "BITTREX_API_SECRET",
+    "COINBASE_API_SECRET",
+    "COINBASE_API_KEY",
+    "GATECOIN_API_KEY",
+    "GATECOIN_API_SECRET",
+    "LIQUI_API_SECRET",
+    "LIQUI_API_KEY",
+    "GDAX_API_KEY",
+    "GDAX_API_SECRET",
+    "GDAX_PASSPHRASE",
+    "POLONIEX_API_KEY",
+    "POLONIEX_API_SECRET",
+]
+skd = {
+    # secret key dict
+    k: os.environ.get(k)
+    for k in secret_keys
+    if os.environ.get(k)
+}
 kwargs = {
-    'liqui': {'key': LIQUI_API_KEY, 'secret': LIQUI_API_SECRET},
+    'liqui': {'key': skd['LIQUI_API_KEY'], 'secret': skd['LIQUI_API_SECRET']},
     # 'poloniex': {'key': POLONIEX_API_KEY, 'secret': POLONIEX_API_SECRET},
     # 'bittrex': {'api_key': BITTREX_API_KEY, 'api_secret': BITTREX_API_SECRET},
     # 'coinbase': {'api_key': COINBASE_API_KEY, 'api_secret': COINBASE_API_SECRET},
