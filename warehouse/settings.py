@@ -150,7 +150,7 @@ skd = {
 }
 kwargs = {
     'liqui': {'key': skd['LIQUI_API_KEY'], 'secret': skd['LIQUI_API_SECRET']},
-    # 'poloniex': {'key': POLONIEX_API_KEY, 'secret': POLONIEX_API_SECRET},
+    'poloniex': {'key': skd['POLONIEX_API_KEY'], 'secret': ['POLONIEX_API_SECRET']},
     # 'bittrex': {'api_key': BITTREX_API_KEY, 'api_secret': BITTREX_API_SECRET},
     # 'coinbase': {'api_key': COINBASE_API_KEY, 'api_secret': COINBASE_API_SECRET},
     # 'gdax': {'key': GDAX_API_KEY, 'b64secret': GDAX_API_SECRET, 'passphrase': GDAX_PASSPHRASE},

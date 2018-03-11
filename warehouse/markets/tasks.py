@@ -6,12 +6,15 @@ from warehouse.settings import METACLIENT
 from warehouse.markets.models import CurrencyTicker, MARKETS
 
 
+ENABLED_MARKETS = ['liqui', 'poloniex']
+
+
 @task()
 def update_tickers():
     currency_tickers = []
 
     for market in MARKETS.names():
-        if market != 'liqui':
+        if market not in ENABLED_MARKETS:
             continue
 
         market_ticker = METACLIENT.ticker(market)
