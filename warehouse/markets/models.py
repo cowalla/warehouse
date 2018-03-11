@@ -6,6 +6,8 @@ from warehouse.utilities import ChoiceEnum
 
 MARKETS_LIST = {
     'liqui': '1',
+    'gdax': '2',
+    'poloniex': '3',
 }
 MARKETS = ChoiceEnum(MARKETS_LIST)
 

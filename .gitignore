@@ -3,5 +3,6 @@ venv/
 *.pyc
 db.sqlite3
 environment.sh
+secret.sh
 celerybeat-schedule.db
 celerybeat.pid

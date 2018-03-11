@@ -11,6 +11,9 @@ def update_tickers():
     currency_tickers = []
 
     for market in MARKETS.names():
+        if market != 'liqui':
+            continue
+
         market_ticker = METACLIENT.ticker(market)
 
         for currency_pair, currency_data in market_ticker.iteritems():
