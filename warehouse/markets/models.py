@@ -9,6 +9,7 @@ MARKETS_LIST = {
     'gdax': '2',
     'poloniex': '3',
 }
+MARKETS_FULL_NAME_MAP = {v: k for k, v in MARKETS_LIST.iteritems()}
 MARKETS = ChoiceEnum(MARKETS_LIST)
 
 
@@ -33,7 +34,7 @@ class CurrencyTicker(models.Model):
     def as_dict(self):
         return {
             'currency_pair': self.currency_pair,
-            'exchange': MARKETS[self.exchange],
+            'exchange': MARKETS_FULL_NAME_MAP[self.exchange], # full name
             'average': self.average,
             'base_volume': self.base_volume,
             'current_volume': self.current_volume,
