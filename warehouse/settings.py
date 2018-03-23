@@ -148,16 +148,21 @@ skd = {
     for k in secret_keys
     if os.environ.get(k)
 }
+
 kwargs = {
     'liqui': {'key': skd['LIQUI_API_KEY'], 'secret': skd['LIQUI_API_SECRET']},
     'poloniex': {'key': skd['POLONIEX_API_KEY'], 'secret': ['POLONIEX_API_SECRET']},
     # 'bittrex': {'api_key': BITTREX_API_KEY, 'api_secret': BITTREX_API_SECRET},
     # 'coinbase': {'api_key': COINBASE_API_KEY, 'api_secret': COINBASE_API_SECRET},
-    # 'gdax': {'key': GDAX_API_KEY, 'b64secret': GDAX_API_SECRET, 'passphrase': GDAX_PASSPHRASE},
+    'gdax': {'key': skd['GDAX_API_KEY'], 'b64secret': skd['GDAX_API_SECRET'], 'passphrase': skd['GDAX_PASSPHRASE']},
     # 'gatecoin': {'key': GATECOIN_API_KEY, 'secret': GATECOIN_API_SECRET},
 }
 
 METACLIENT = CryptoMediator(**kwargs)
+
+# remove secrets
+del skd
+del kwargs
 
 
 # Celery

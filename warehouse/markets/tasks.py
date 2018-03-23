@@ -1,3 +1,5 @@
+import time
+
 from django.db import transaction
 
 from celery import task
@@ -20,6 +22,22 @@ ENABLED_MARKETS_PRODUCTS = {
 }
 
 
+def current_utc_timestamp():
+    return int(time.time())
+
+
+def get_kwargs(currency_data, pair, market):
+    kwargs = currency_data.copy()
+    kwargs['exchange'] = MARKETS[market]
+    kwargs['currency_pair'] = pair
+
+    if not kwargs.get('updated'):
+        kwargs['updated'] = current_utc_timestamp()
+
+    return kwargs
+
+
+
 @task()
 def update_tickers():
     currency_tickers = []
@@ -28,9 +46,7 @@ def update_tickers():
         market_ticker = METACLIENT.ticker(market)
 
         for currency_pair, currency_data in market_ticker.iteritems():
-            kwargs = currency_data.copy()
-            kwargs['exchange'] = MARKETS[market]
-            kwargs['currency_pair'] = currency_pair
+            kwargs = get_kwargs(currency_data, currency_pair, market)
             currency_tickers.append(CurrencyTicker(**kwargs))
 
     with transaction.atomic():
@@ -45,10 +61,7 @@ def update_product_tickers():
     for market, products in ENABLED_MARKETS_PRODUCTS.iteritems():
         for product in products:
             currency_data = METACLIENT.product_ticker(market, product)
-
-            kwargs = currency_data.copy()
-            kwargs['exchange'] = MARKETS[market]
-            kwargs['currency_pair'] = product
+            kwargs = get_kwargs(currency_data, product, market)
             currency_tickers.append(CurrencyTicker(**kwargs))
 
     with transaction.atomic():

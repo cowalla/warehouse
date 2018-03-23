@@ -14,8 +14,8 @@ MARKETS = ChoiceEnum(MARKETS_LIST)
 
 
 class CurrencyTicker(models.Model):
-    currency_pair = models.CharField(max_length=120)
-    exchange = models.CharField(max_length=120, choices=MARKETS.as_choices())
+    currency_pair = models.CharField(max_length=20)
+    exchange = models.CharField(max_length=2, choices=MARKETS.as_choices())
 
     average = models.FloatField(null=True, blank=True)
     base_volume = models.FloatField(null=True, blank=True)   # float,
