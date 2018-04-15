@@ -26,4 +26,4 @@ python manage.py celery worker --loglevel=info
 
 # OTHER
 
-helpful: git update-index --assume-unchanged secret.env 
+helpful: git update-index --assume-unchanged secret.env

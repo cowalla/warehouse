@@ -8,7 +8,7 @@ from warehouse.settings import METACLIENT
 from warehouse.markets.models import CurrencyTicker, MARKETS
 
 
-ENABLED_MARKETS = ['liqui', 'poloniex']
+ENABLED_MARKETS = ['liqui']
 ENABLED_MARKETS_PRODUCTS = {
     'gdax': [
         'usd_btc',

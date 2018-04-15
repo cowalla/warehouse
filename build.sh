@@ -3,4 +3,4 @@ mv mediator crypto_mediator
 
 docker build -t warehouse .
 
-rm -rf mediator
+rm -rf crypto_mediator
