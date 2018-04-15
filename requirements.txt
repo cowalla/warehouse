@@ -10,7 +10,6 @@ certifi==2017.11.5
 chardet==3.0.4
 coinbase==2.0.7
 configparser==3.5.0
-crypto-mediator==0.9.0
 Django==1.8
 django-celery==3.2.2
 enum34==1.1.6
@@ -25,13 +24,11 @@ liqui==1.0.1
 mccabe==0.6.1
 mock==2.0.0
 pbr==3.1.1
-poloniex==0.4.6
 psycopg2==2.7.4
 py==1.5.1
 pycrypto==2.6.1
 pylint==1.7.4
 pytest==3.2.5
-python-bittrex==0.3.0
 python-dateutil==2.6.1
 pytz==2018.3
 requests==2.7.0
@@ -41,3 +38,9 @@ urllib3==1.22
 websocket-client==0.40.0
 wheel==0.24.0
 wrapt==1.10.11
+
+# poloniex==0.4.6
+https://github.com/s4w3d0ff/python-poloniex/archive/v0.4.7.zip
+
+# python-bittrex==0.3.0
+git+https://github.com/ericsomdahl/python-bittrex.git

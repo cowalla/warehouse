@@ -18,8 +18,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
+class ConfigError(BaseException):
+    pass
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'wn3j9y%z)6cic3c#$$p9#3_*b+#zk(e0r)^i#qo8lntdjez(xl'
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+if SECRET_KEY is None:
+    raise ConfigError('Security key not configured!')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -77,30 +83,20 @@ WSGI_APPLICATION = 'warehouse.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-import os
-IS_PRODUCTION = os.environ.get('IS_PRODUCTION', False) == 'true'
-DATABASE_PORT = '5432'
-DATABASE_NAME = 'cryptodb'
-DATABASE_HOST = os.environ.get('DATABASE_URL')
+DATABASE_NAME = os.environ.get('DATABASE_NAME')
 DATABASE_USER = os.environ.get('DATABASE_USER')
-DATABASE_PASSWORD = os.environ.get('DATABASE_PASSWORD')
+DATABASE_HOST = os.environ.get('DATABASE_HOST')
+DATABASE_PORT = os.environ.get('DATABASE_PORT')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-if IS_PRODUCTION:
-    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': DATABASE_NAME,
         'USER': DATABASE_USER,
-        'PASSWORD': DATABASE_PASSWORD,
         'HOST': DATABASE_HOST,
         'PORT': DATABASE_PORT,
     }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
