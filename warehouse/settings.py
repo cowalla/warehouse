@@ -154,6 +154,9 @@ exchange_kwargs = {
     'gatecoin': {'key': skd.get('GATECOIN_API_KEY'), 'secret': skd.get('GATECOIN_API_SECRET')},
 }
 
+requires_kwargs = {'gdax', 'coinbase'}
+original_kwargs = exchange_kwargs.copy()
+
 for exchange in exchange_kwargs.keys():
     if not all(exchange_kwargs[exchange].values()):
         exchange_kwargs.pop(exchange)
@@ -171,4 +174,3 @@ djcelery.setup_loader()
 BROKER_URL = 'django://'
 
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-

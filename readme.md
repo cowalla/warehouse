@@ -7,10 +7,14 @@ Build base docker image with crypto_mediator:
 Specify run configs in secret.env (SECRET_KEY and database configs are absolutely necessary)
 
 Run services with docker
-  - docker-compose up -d
+  - docker-compose -f docker/warehouse/docker-compose.yml up -d
+  - docker-compose -f docker/celery/docker-compose.yml up -d
 
 Create a superuser
   - docker exec -it warehouse_warehouse_1 python manage.py createsuperuser
+
+Create polling tasks
+  -
 
 Without docker:
 

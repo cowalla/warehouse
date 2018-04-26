@@ -41,8 +41,8 @@ services:
     environment:
       - C_FORCE_ROOT=true
     depends_on:
-      - db
       - migration
+      - db
     volumes:
       - .:/app/
 
@@ -56,8 +56,8 @@ services:
     environment:
       - C_FORCE_ROOT=true
     depends_on:
-      - db
       - migration
       - celery-worker
+      - db
     volumes:
       - .:/app/

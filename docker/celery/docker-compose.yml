@@ -1,0 +1,47 @@
+version: '2'
+
+services:
+  # Celery worker
+  purge:
+    build: .
+    command: python manage.py celery purge -f
+    image: warehouse:latest
+    env_file:
+      - "${WAREHOUSE_HOME}/secret.env"
+    environment:
+      - C_FORCE_ROOT=true
+    volumes:
+      - ./:/app
+
+  celery-worker:
+    build: .
+    command: python manage.py celery worker --loglevel=INFO
+    image: warehouse:latest
+    env_file:
+      - "${WAREHOUSE_HOME}/secret.env"
+    environment:
+      - C_FORCE_ROOT=true
+    volumes:
+      - ./:/app
+    depends_on:
+      - purge
+
+  # Celery beat
+  celery-beat:
+    build: .
+    command: python manage.py celery beat
+    image: warehouse:latest
+    env_file:
+      - "${WAREHOUSE_HOME}/secret.env"
+    environment:
+      - C_FORCE_ROOT=true
+    depends_on:
+      - purge
+      - celery-worker
+    volumes:
+      - ./:/app
+
+networks:
+  default:
+    external:
+      name: warehouse_network

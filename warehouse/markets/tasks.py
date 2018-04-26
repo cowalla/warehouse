@@ -8,7 +8,7 @@ from warehouse.settings import METACLIENT
 from warehouse.markets.models import CurrencyTicker, MARKETS
 
 
-ENABLED_MARKETS = ['liqui']
+ENABLED_MARKETS = ['liqui', 'poloniex']
 ENABLED_MARKETS_PRODUCTS = {
     'gdax': [
         'usd_btc',
@@ -37,32 +37,25 @@ def get_kwargs(currency_data, pair, market):
     return kwargs
 
 
+def get_ticker_objects(ticker_response, market):
+    return [
+        CurrencyTicker(**get_kwargs(currency_data, currency_pair, market))
+        for currency_pair, currency_data in ticker_response
+    ]
+
 
 @task()
-def update_tickers():
-    currency_tickers = []
-
-    for market in ENABLED_MARKETS:
-        market_ticker = METACLIENT.ticker(market)
-
-        for currency_pair, currency_data in market_ticker.iteritems():
-            kwargs = get_kwargs(currency_data, currency_pair, market)
-            currency_tickers.append(CurrencyTicker(**kwargs))
+def update_product_ticker(market, product):
+    product_tickers = get_ticker_objects([METACLIENT.product_ticker(market, product)], market)
 
     with transaction.atomic():
-        for ticker in currency_tickers:
+        for ticker in product_tickers:
             ticker.save()
 
 
 @task()
-def update_product_tickers():
-    currency_tickers = []
-
-    for market, products in ENABLED_MARKETS_PRODUCTS.iteritems():
-        for product in products:
-            currency_data = METACLIENT.product_ticker(market, product)
-            kwargs = get_kwargs(currency_data, product, market)
-            currency_tickers.append(CurrencyTicker(**kwargs))
+def update_ticker(market):
+    currency_tickers = get_ticker_objects(METACLIENT.ticker(market), market)
 
     with transaction.atomic():
         for ticker in currency_tickers:

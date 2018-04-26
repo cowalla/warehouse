@@ -1,0 +1,44 @@
+version: '2'
+
+services:
+  # Postgres
+  db:
+    image: postgres:9.4
+    networks:
+      - warehouse_network
+    volumes:
+      - ./:/app
+
+  # Onstart commands
+  migration:
+    command: python manage.py migrate --noinput
+    env_file:
+      - "${WAREHOUSE_HOME}/secret.env"
+    image: warehouse:latest
+    volumes:
+      - "${WAREHOUSE_HOME}:/app"
+    depends_on:
+      - db
+    networks:
+      - warehouse_network
+
+  # Web
+  warehouse:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - "${WAREHOUSE_HOME}/secret.env"
+    image: warehouse:latest
+    ports:
+     - 8000:8000
+    depends_on:
+      - db
+      - migration
+    volumes:
+      - "${WAREHOUSE_HOME}:/app"
+    networks:
+      - warehouse_network
+
+networks:
+  warehouse_network:
+    external: true
