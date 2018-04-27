@@ -1,5 +1,6 @@
 import time
 
+from django.core.management import call_command
 from django.db import transaction
 
 from celery import task
@@ -43,6 +44,11 @@ def get_ticker_objects(ticker_response, market):
         for currency_pair, currency_data in ticker_response
     ]
 
+@task()
+def update_product_tickers(market, products):
+    for product in products:
+        update_product_ticker(market, product)
+
 
 @task()
 def update_product_ticker(market, product):
@@ -60,3 +66,13 @@ def update_ticker(market):
     with transaction.atomic():
         for ticker in currency_tickers:
             ticker.save()
+
+
+# TODO: Move to better location
+@task()
+def backup_db():
+    call_command('dbbackup')
+
+# TODO: make work properly
+def restore_db():
+    call_command('dbrestore')
