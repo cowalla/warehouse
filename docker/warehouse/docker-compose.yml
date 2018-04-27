@@ -7,16 +7,16 @@ services:
     networks:
       - warehouse_network
     volumes:
-      - ./:/app
+      - ${WAREHOUSE_HOME}:/app
 
   # Onstart commands
   migration:
     command: python manage.py migrate --noinput
     env_file:
-      - "${WAREHOUSE_HOME}/secret.env"
+      - ${WAREHOUSE_HOME}/environment.env
     image: warehouse:latest
     volumes:
-      - "${WAREHOUSE_HOME}:/app"
+      - ${WAREHOUSE_HOME}:/app
     depends_on:
       - db
     networks:
@@ -27,15 +27,17 @@ services:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     env_file:
-      - "${WAREHOUSE_HOME}/secret.env"
+      - ${WAREHOUSE_HOME}/environment.env
     image: warehouse:latest
+    links:
+      - db
     ports:
      - 8000:8000
     depends_on:
       - db
       - migration
     volumes:
-      - "${WAREHOUSE_HOME}:/app"
+      - ${WAREHOUSE_HOME}:/app
     networks:
       - warehouse_network
 

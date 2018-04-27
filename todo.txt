@@ -1,0 +1,8 @@
+TODO: make celery task that will periodically backup db using command similar to,
+
+    `pg_dump -d postgres -h db -p 5432 -U postgres --no-password --clean`
+
+    - or similar result to -
+
+    `docker exec -it warehouse_warehouse_1 python manage.py dbbackup`
+

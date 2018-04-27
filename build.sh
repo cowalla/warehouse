@@ -1,4 +1,3 @@
-export WAREHOUSE_HOME="$(pwd)"
 git clone git@github.com:cowalla/mediator.git
 mv mediator crypto_mediator
 

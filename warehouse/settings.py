@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'warehouse.markets',
     'djcelery',
     'kombu.transport.django',
+    'dbbackup',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -97,6 +98,24 @@ DATABASES = {
         'PORT': DATABASE_PORT,
     }
 }
+
+# Backup
+
+backup_dir = os.environ.get('DATABASE_BACKUP_DIR', os.path.join(os.getcwd(), 'backups'))
+
+if not os.path.exists(backup_dir):
+    os.makedirs(backup_dir)
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': backup_dir}
+
+# DBBACKUP_CONNECTORS = {
+#     'default': {
+#         'USER': DATABASE_USER,
+#         'PASSWORD': '',
+#         'HOST': DATABASE_HOST
+#     }
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

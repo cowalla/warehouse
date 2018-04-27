@@ -7,22 +7,22 @@ services:
     command: python manage.py celery purge -f
     image: warehouse:latest
     env_file:
-      - "${WAREHOUSE_HOME}/secret.env"
+      - ${WAREHOUSE_HOME}/environment.env
     environment:
       - C_FORCE_ROOT=true
     volumes:
-      - ./:/app
+      - ${WAREHOUSE_HOME}:/app
 
   celery-worker:
     build: .
     command: python manage.py celery worker --loglevel=INFO
     image: warehouse:latest
     env_file:
-      - "${WAREHOUSE_HOME}/secret.env"
+      - ${WAREHOUSE_HOME}/environment.env
     environment:
       - C_FORCE_ROOT=true
     volumes:
-      - ./:/app
+      - ${WAREHOUSE_HOME}:/app
     depends_on:
       - purge
 
@@ -32,14 +32,14 @@ services:
     command: python manage.py celery beat
     image: warehouse:latest
     env_file:
-      - "${WAREHOUSE_HOME}/secret.env"
+      - ${WAREHOUSE_HOME}/environment.env
     environment:
       - C_FORCE_ROOT=true
     depends_on:
       - purge
       - celery-worker
     volumes:
-      - ./:/app
+      - ${WAREHOUSE_HOME}:/app
 
 networks:
   default:

@@ -6,4 +6,6 @@ environment.sh
 secret.sh
 celerybeat-schedule.db
 celerybeat.pid
-secret.env
+environment.env
+
+backups/*
