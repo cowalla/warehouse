@@ -41,7 +41,7 @@ def get_kwargs(currency_data, pair, market):
 def get_ticker_objects(ticker_response, market):
     return [
         CurrencyTicker(**get_kwargs(currency_data, currency_pair, market))
-        for currency_pair, currency_data in ticker_response
+        for currency_pair, currency_data in ticker_response.iteritems()
     ]
 
 @task()
@@ -52,7 +52,8 @@ def update_product_tickers(market, products):
 
 @task()
 def update_product_ticker(market, product):
-    product_tickers = get_ticker_objects([METACLIENT.product_ticker(market, product)], market)
+    ticker_response = METACLIENT.product_ticker(market, product)
+    product_tickers = get_ticker_objects({product: ticker_response}, market)
 
     with transaction.atomic():
         for ticker in product_tickers:
@@ -61,7 +62,8 @@ def update_product_ticker(market, product):
 
 @task()
 def update_ticker(market):
-    currency_tickers = get_ticker_objects(METACLIENT.ticker(market), market)
+    tickers_response = METACLIENT.ticker(market)
+    currency_tickers = get_ticker_objects(tickers_response, market)
 
     with transaction.atomic():
         for ticker in currency_tickers:
