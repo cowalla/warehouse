@@ -109,13 +109,13 @@ if not os.path.exists(backup_dir):
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': backup_dir}
 
-# DBBACKUP_CONNECTORS = {
-#     'default': {
-#         'USER': DATABASE_USER,
-#         'PASSWORD': '',
-#         'HOST': DATABASE_HOST
-#     }
-# }
+DBBACKUP_CONNECTORS = {
+    'default': {
+        'USER': DATABASE_USER,
+        'PASSWORD': '',
+        'HOST': DATABASE_HOST
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

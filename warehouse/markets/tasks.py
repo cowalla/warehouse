@@ -44,6 +44,7 @@ def get_ticker_objects(ticker_response, market):
         for currency_pair, currency_data in ticker_response.iteritems()
     ]
 
+
 @task()
 def update_product_tickers(market, products):
     for product in products:
@@ -74,6 +75,7 @@ def update_ticker(market):
 @task()
 def backup_db():
     call_command('dbbackup')
+
 
 # TODO: make work properly
 def restore_db():
