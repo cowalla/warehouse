@@ -45,30 +45,64 @@ def get_ticker_objects(ticker_response, market):
     ]
 
 
-@task()
-def update_product_tickers(market, products):
-    for product in products:
-        update_product_ticker(market, product)
-
-
-@task()
-def update_product_ticker(market, product):
+def get_product_tickers(market, product):
     ticker_response = METACLIENT.product_ticker(market, product)
-    product_tickers = get_ticker_objects({product: ticker_response}, market)
 
+    return get_ticker_objects({product: ticker_response}, market)
+
+
+def get_exchange_tickers(market):
+    tickers_response = METACLIENT.ticker(market)
+
+    return get_ticker_objects(tickers_response, market)
+
+
+def save_tickers(tickers):
     with transaction.atomic():
-        for ticker in product_tickers:
+        for ticker in tickers:
             ticker.save()
+
+
+@task()
+def update_all_enabled_market_tickers():
+    tickers = []
+
+    for market in ENABLED_MARKETS:
+        try:
+            tickers += get_exchange_tickers(market)
+        except:
+            print 'Could not get tickers for %s' % market
+            pass
+    for market, products in ENABLED_MARKETS_PRODUCTS.iteritems():
+        for product in products:
+            try:
+                tickers += get_product_tickers(market, product)
+            except:
+                print 'Could not get product tickers for %s, for product "%s"' % (market, product)
+                pass
+
+    save_tickers(tickers)
 
 
 @task()
 def update_ticker(market):
-    tickers_response = METACLIENT.ticker(market)
-    currency_tickers = get_ticker_objects(tickers_response, market)
+    exchange_tickers = get_exchange_tickers(market)
 
-    with transaction.atomic():
-        for ticker in currency_tickers:
-            ticker.save()
+    save_tickers(exchange_tickers)
+
+
+@task()
+def update_product_tickers(market, products):
+    product_tickers = []
+
+    for product in products:
+        product_tickers += get_product_tickers(market, product)
+
+    save_tickers(product_tickers)
+
+@task()
+def update_product_ticker(market, product):
+    update_product_tickers(market, [product])
 
 
 # TODO: Move to better location
