@@ -41,6 +41,11 @@ services:
     networks:
       - warehouse_network
 
+  # TODO: tunneling
+#  ngrok:
+#    image: warehouse:latest
+#    command: ./ngrok http 8000
+
 networks:
   warehouse_network:
     external: true
