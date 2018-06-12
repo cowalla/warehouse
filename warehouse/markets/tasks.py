@@ -1,3 +1,5 @@
+import json
+import os
 import time
 
 from django.core.management import call_command
@@ -5,7 +7,7 @@ from django.db import transaction
 
 from celery import task
 
-from warehouse.settings import METACLIENT
+from warehouse.settings import METACLIENT, BASE_DIR
 from warehouse.markets.models import CurrencyTicker, MARKETS
 
 
@@ -105,7 +107,39 @@ def update_product_ticker(market, product):
     update_product_tickers(market, [product])
 
 
+def backup_tickers(tickers, filename, append=False):
+    BACKUP_PATH = os.path.join(BASE_DIR, 'backups/txt')
+
+    write_mode = 'a' if append else 'w'
+    file_path = os.path.join(BACKUP_PATH, '%s.txt' % filename)
+
+    with open(file_path, write_mode) as backup:
+        backup.writelines([json.dumps(t.as_dict()) for t in tickers])
+
+
 # TODO: Move to better location
+@task()
+def small_backup_tickers():
+    # get all tickers younger than an hour
+    current_time = time.time()
+    one_hour_ago_timestamp = current_time - 1 * (60 * 60)
+    young_tickers = CurrencyTicker.objects.filter(updated__gte=one_hour_ago_timestamp)
+    filename = str(int(current_time))
+
+    backup_tickers(young_tickers, filename)
+
+
+@task()
+def backup_all_tickers():
+    CHUNK_SIZE = 10000
+    filename = 'big-%s' % str(int(time.time()))
+    num_tickers = CurrencyTicker.objects.count()
+
+    for offset in range(CHUNK_SIZE, num_tickers + CHUNK_SIZE, CHUNK_SIZE):
+        tickers = CurrencyTicker.objects.filter(id__lte=offset, id__gt=offset - CHUNK_SIZE)
+        backup_tickers(tickers, filename, append=True)
+
+
 @task()
 def backup_db():
     call_command('dbbackup')

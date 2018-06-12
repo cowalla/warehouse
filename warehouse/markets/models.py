@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib import admin
 
@@ -30,6 +32,8 @@ class CurrencyTicker(models.Model):
     price = models.FloatField(null=True, blank=True)   # float,
     quote_volume = models.FloatField(null=True, blank=True)   # float,
     updated = models.PositiveIntegerField(null=True, blank=True)   # timestamp,
+
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
 
     def as_dict(self):
         return {

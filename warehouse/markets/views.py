@@ -3,6 +3,9 @@ from django.http import JsonResponse, Http404
 from warehouse.markets.models import CurrencyTicker, MARKETS
 
 
+LIMIT = 10000
+
+
 def currency_ticker(request):
     exchange = request.GET.get('exchange')
     before = request.GET.get('before')
@@ -19,7 +22,7 @@ def currency_ticker(request):
 
     data = [
         t.as_dict()
-        for t in tickers
+        for t in tickers[:10000]
     ]
 
     return JsonResponse(data, safe=False)
