@@ -27,6 +27,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 if SECRET_KEY is None:
     raise ConfigError('Security key not configured!')
 
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -169,7 +173,8 @@ exchange_kwargs = {
     'poloniex': {'key': skd.get('POLONIEX_API_KEY'), 'secret': ['POLONIEX_API_SECRET']},
     'bittrex': {'api_key': skd.get('BITTREX_API_KEY'), 'api_secret': skd.get('BITTREX_API_SECRET')},
     'coinbase': {'api_key': skd.get('COINBASE_API_KEY'), 'api_secret': skd.get('COINBASE_API_SECRET')},
-    'gdax': {'key': skd.get('GDAX_API_KEY'), 'b64secret': skd.get('GDAX_API_SECRET'), 'passphrase': skd.get('GDAX_PASSPHRASE')},
+    # Fix {"message":"request timestamp expired"} problem on `set_account_info`
+    # 'gdax': {'key': skd.get('GDAX_API_KEY'), 'b64secret': skd.get('GDAX_API_SECRET'), 'passphrase': skd.get('GDAX_PASSPHRASE')},
     'gatecoin': {'key': skd.get('GATECOIN_API_KEY'), 'secret': skd.get('GATECOIN_API_SECRET')},
 }
 
@@ -193,3 +198,13 @@ djcelery.setup_loader()
 BROKER_URL = 'django://'
 
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+import boto3
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
+
+S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')

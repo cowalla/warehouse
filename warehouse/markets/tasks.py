@@ -107,7 +107,7 @@ def update_product_ticker(market, product):
     update_product_tickers(market, [product])
 
 
-def backup_tickers(tickers, filename, append=False):
+def backup_tickers(tickers, filename, append=False, backup_to_s3=True):
     BACKUP_PATH = os.path.join(BASE_DIR, 'backups/txt')
 
     write_mode = 'a' if append else 'w'
@@ -115,6 +115,11 @@ def backup_tickers(tickers, filename, append=False):
 
     with open(file_path, write_mode) as backup:
         backup.writelines([json.dumps(t.as_dict()) for t in tickers])
+
+    if backup_to_s3:
+        from warehouse.utilities import upload_backup_to_s3
+
+        upload_backup_to_s3(file_path)
 
 
 # TODO: Move to better location
