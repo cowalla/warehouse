@@ -1,7 +1,7 @@
 import os
 import time
 
-from warehouse.settings import s3_client, S3_BUCKET_NAME
+from warehouse.settings import s3_client, S3_BUCKET_NAME, BACKUP_DIR
 
 
 class ChoiceEnum(object):
@@ -21,12 +21,14 @@ class ChoiceEnum(object):
         return self.names_enums[item]
 
 
+def get_backup_path(name):
+    from warehouse.settings import BACKUP_DIR
+
+    return os.path.join(BACKUP_DIR, name)
+
+
 def upload_to_s3(file_path, filename):
     return s3_client.upload_file(file_path, S3_BUCKET_NAME, filename)
-
-
-def get_backup_path(name):
-    return os.path.join(os.getcwd(), 'backups/txt/%s' % name)
 
 
 def upload_backup_to_s3(backup_filename):
@@ -47,9 +49,9 @@ def download_s3_file(filename, file_path):
 
 def download_all_backups_from_s3():
     file_names = list_s3_file_names()
+    existing_backups = os.listdir(BACKUP_DIR)
+    needed_backups = list(set(file_names) - set(existing_backups))
 
-    for backup_name in file_names:
+    for backup_name in needed_backups:
         backup_path = get_backup_path(backup_name)
         download_s3_file(backup_name, backup_path)
-
-

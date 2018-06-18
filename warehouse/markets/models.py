@@ -52,7 +52,7 @@ class CurrencyTicker(models.Model):
             'price': self.price,
             'quote_volume': self.quote_volume,
             'updated': self.updated,
-            'uuid': self.uuid,
+            'uuid': str(self.uuid),
         }
 
 

@@ -20,7 +20,7 @@ def add_basic_intervals(apps, schema_editor):
     PeriodicTask.objects.get_or_create(
         name='Backup new tickers to txt',
         task='warehouse.markets.tasks.small_backup_tickers',
-        interval=every_minute
+        interval=every_hour
     )
 
 

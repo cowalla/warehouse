@@ -7,7 +7,7 @@ from django.db import transaction
 
 from celery import task
 
-from warehouse.settings import METACLIENT, BASE_DIR
+from warehouse.settings import METACLIENT, BASE_DIR, BACKUP_DIR
 from warehouse.markets.models import CurrencyTicker, MARKETS
 
 
@@ -111,7 +111,8 @@ def backup_tickers(tickers, filename, append=False, backup_to_s3=True):
     BACKUP_PATH = os.path.join(BASE_DIR, 'backups/txt')
 
     write_mode = 'a' if append else 'w'
-    file_path = os.path.join(BACKUP_PATH, '%s.txt' % filename)
+    backup_filename = '%s.txt' % filename
+    file_path = os.path.join(BACKUP_PATH, backup_filename)
 
     with open(file_path, write_mode) as backup:
         backup.writelines([json.dumps(t.as_dict()) for t in tickers])
@@ -119,7 +120,7 @@ def backup_tickers(tickers, filename, append=False, backup_to_s3=True):
     if backup_to_s3:
         from warehouse.utilities import upload_backup_to_s3
 
-        upload_backup_to_s3(file_path)
+        upload_backup_to_s3(backup_filename)
 
 
 # TODO: Move to better location
@@ -143,6 +144,54 @@ def backup_all_tickers():
     for offset in range(CHUNK_SIZE, num_tickers + CHUNK_SIZE, CHUNK_SIZE):
         tickers = CurrencyTicker.objects.filter(id__lte=offset, id__gt=offset - CHUNK_SIZE)
         backup_tickers(tickers, filename, append=True)
+
+
+@task()
+def sync_all_backups_to_s3():
+    import os
+    from warehouse.settings import BACKUP_DIR
+    from warehouse.utilities import list_s3_file_names, upload_backup_to_s3
+
+    s3_backups = list_s3_file_names()
+    local_backups = os.listdir(BACKUP_DIR)
+    missing_backups = list(set(local_backups) - set(s3_backups))
+
+    for backup in missing_backups:
+        upload_backup_to_s3(backup)
+
+
+def restore_tickers_from_backup(backup):
+    file_path = os.path.join(BACKUP_DIR, backup)
+
+    with open(file_path, 'r') as f:
+        lines = [json.loads(line) for line in f.readlines()]
+
+    uuids = set([l['uuid'] for l in lines])
+    existing_uuids = set([
+        str(uuid)
+        for uuid in CurrencyTicker.objects.all().values_list('uuid')
+    ])
+    needed_uuids = uuids - existing_uuids
+
+    with transaction.atomic():
+        for line in lines:
+            line_uuid = str(line['uuid'])
+
+            if line_uuid == '':
+                continue
+            if line_uuid not in needed_uuids:
+                continue
+
+            CurrencyTicker(**line).save()
+
+
+def restore_tickers_from_s3():
+    from warehouse.utilities import download_all_backups_from_s3
+
+    download_all_backups_from_s3()
+
+    for backup_name in os.listdir(BACKUP_DIR):
+        restore_tickers_from_backup(backup_name)
 
 
 @task()
