@@ -160,40 +160,6 @@ def sync_all_backups_to_s3():
         upload_backup_to_s3(backup)
 
 
-def restore_tickers_from_backup(backup):
-    file_path = os.path.join(BACKUP_DIR, backup)
-
-    with open(file_path, 'r') as f:
-        lines = [json.loads(line) for line in f.readlines()]
-
-    uuids = set([l['uuid'] for l in lines])
-    existing_uuids = set([
-        str(uuid)
-        for uuid in CurrencyTicker.objects.all().values_list('uuid')
-    ])
-    needed_uuids = uuids - existing_uuids
-
-    with transaction.atomic():
-        for line in lines:
-            line_uuid = str(line['uuid'])
-
-            if line_uuid == '':
-                continue
-            if line_uuid not in needed_uuids:
-                continue
-
-            CurrencyTicker(**line).save()
-
-
-def restore_tickers_from_s3():
-    from warehouse.utilities import download_all_backups_from_s3
-
-    download_all_backups_from_s3()
-
-    for backup_name in os.listdir(BACKUP_DIR):
-        restore_tickers_from_backup(backup_name)
-
-
 @task()
 def backup_db():
     call_command('dbbackup')

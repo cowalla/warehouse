@@ -1,6 +1,9 @@
+import json
 import os
-import time
 
+from django.db import transaction
+
+from warehouse.markets.models import CurrencyTicker
 from warehouse.settings import s3_client, S3_BUCKET_NAME, BACKUP_DIR
 
 
@@ -55,3 +58,31 @@ def download_all_backups_from_s3():
     for backup_name in needed_backups:
         backup_path = get_backup_path(backup_name)
         download_s3_file(backup_name, backup_path)
+
+
+def restore_tickers_from_backup(backup):
+    file_path = os.path.join(BACKUP_DIR, backup)
+
+    with open(file_path, 'r') as f:
+        lines = [json.loads(line) for line in f.readlines()]
+
+    existing_uuids = set([
+        str(uuid)
+        for uuid in CurrencyTicker.objects.all().values_list('uuid')
+    ])
+
+    with transaction.atomic():
+        for line in lines:
+            line_uuid = str(line['uuid'])
+
+            if line_uuid in existing_uuids:
+                continue
+
+            CurrencyTicker(**line).save()
+
+
+def restore_tickers_from_s3():
+    download_all_backups_from_s3()
+
+    for backup_name in os.listdir(BACKUP_DIR):
+        restore_tickers_from_backup(backup_name)

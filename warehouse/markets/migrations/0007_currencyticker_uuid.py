@@ -12,7 +12,6 @@ def create_uuid(apps, schema_editor):
     num_tickers = CurrencyTicker.objects.count()
 
     for offset in range(CHUNK_SIZE, num_tickers + CHUNK_SIZE, CHUNK_SIZE):
-        print offset
         tickers = CurrencyTicker.objects.filter(id__lte=offset, id__gt=offset - CHUNK_SIZE)
 
         with transaction.atomic():
