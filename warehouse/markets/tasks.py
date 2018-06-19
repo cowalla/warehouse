@@ -115,7 +115,8 @@ def backup_tickers(tickers, filename, append=False, backup_to_s3=True):
     file_path = os.path.join(BACKUP_PATH, backup_filename)
 
     with open(file_path, write_mode) as backup:
-        backup.writelines([json.dumps(t.as_dict()) for t in tickers])
+        for t in tickers:
+            backup.write(json.dumps(t.as_dict()) + '\n')
 
     if backup_to_s3:
         from warehouse.utilities import upload_backup_to_s3

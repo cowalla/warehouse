@@ -7,23 +7,6 @@ from warehouse.markets.models import CurrencyTicker
 from warehouse.settings import s3_client, S3_BUCKET_NAME, BACKUP_DIR
 
 
-class ChoiceEnum(object):
-    def __init__(self, names_enums):
-        self.names_enums = names_enums
-
-    def as_choices(self):
-        return tuple(
-            (enum, name)
-            for name, enum in self.names_enums.iteritems()
-        )
-
-    def names(self):
-        return self.names_enums.keys()
-
-    def __getitem__(self, item):
-        return self.names_enums[item]
-
-
 def get_backup_path(name):
     from warehouse.settings import BACKUP_DIR
 
@@ -40,6 +23,26 @@ def upload_backup_to_s3(backup_filename):
     return upload_to_s3(file_path, backup_filename)
 
 
+# TODO: remove me once backups are fixed
+def get_tickers_from_file(filename):
+    file_path = get_backup_path(filename)
+
+    with open(file_path, 'r') as f:
+        file_contents = f.read()
+
+    entries = [
+        '{' + entry + '}'
+        for entry in file_contents.split('}{')
+    ]
+    entries[0] = entries[0][1:]
+    entries[1] = entries[-1][:-2]
+
+    return [
+        CurrencyTicker(**json.loads(entry))
+        for entry in entries
+    ]
+
+
 def list_s3_file_names():
     files_response = s3_client.list_objects(Bucket=S3_BUCKET_NAME)
 
@@ -47,7 +50,7 @@ def list_s3_file_names():
 
 
 def download_s3_file(filename, file_path):
-    return s3_client.download_file(Bucket=S3_BUCKET_NAME, Key=filename, Path=file_path)
+    return s3_client.download_file(Bucket=S3_BUCKET_NAME, Key=filename, Filename=file_path)
 
 
 def download_all_backups_from_s3():

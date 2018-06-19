@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.contrib import admin
 
-from warehouse.utilities import ChoiceEnum
+from warehouse.choice_enum import ChoiceEnum
 
 
 MARKETS_LIST = {
