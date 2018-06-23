@@ -10,6 +10,7 @@ MARKETS_LIST = {
     'liqui': '1',
     'gdax': '2',
     'poloniex': '3',
+    'bittrex': '4',
 }
 MARKETS_FULL_NAME_MAP = {v: k for k, v in MARKETS_LIST.iteritems()}
 MARKETS = ChoiceEnum(MARKETS_LIST)

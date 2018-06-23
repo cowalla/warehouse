@@ -174,8 +174,7 @@ exchange_kwargs = {
     'poloniex': {'key': skd.get('POLONIEX_API_KEY'), 'secret': ['POLONIEX_API_SECRET']},
     'bittrex': {'api_key': skd.get('BITTREX_API_KEY'), 'api_secret': skd.get('BITTREX_API_SECRET')},
     'coinbase': {'api_key': skd.get('COINBASE_API_KEY'), 'api_secret': skd.get('COINBASE_API_SECRET')},
-    # Fix {"message":"request timestamp expired"} problem on `set_account_info`
-    # 'gdax': {'key': skd.get('GDAX_API_KEY'), 'b64secret': skd.get('GDAX_API_SECRET'), 'passphrase': skd.get('GDAX_PASSPHRASE')},
+    'gdax': {'key': skd.get('GDAX_API_KEY'), 'b64secret': skd.get('GDAX_API_SECRET'), 'passphrase': skd.get('GDAX_PASSPHRASE')},
     'gatecoin': {'key': skd.get('GATECOIN_API_KEY'), 'secret': skd.get('GATECOIN_API_SECRET')},
 }
 

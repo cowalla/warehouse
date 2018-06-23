@@ -11,7 +11,7 @@ from warehouse.settings import METACLIENT, BASE_DIR, BACKUP_DIR
 from warehouse.markets.models import CurrencyTicker, MARKETS
 
 
-ENABLED_MARKETS = ['liqui', 'poloniex']
+ENABLED_MARKETS = ['liqui', 'poloniex', 'bittrex']
 ENABLED_MARKETS_PRODUCTS = {
     'gdax': [
         'usd_btc',
@@ -72,8 +72,10 @@ def update_all_enabled_market_tickers():
     for market in ENABLED_MARKETS:
         try:
             tickers += get_exchange_tickers(market)
-        except:
+        except BaseException as e:
             print 'Could not get tickers for %s' % market
+            print e
+            print get_exchange_tickers(market)
             pass
     for market, products in ENABLED_MARKETS_PRODUCTS.iteritems():
         for product in products:
@@ -108,6 +110,7 @@ def update_product_ticker(market, product):
 
 
 def backup_tickers(tickers, filename, append=False, backup_to_s3=True):
+    # TODO FIX TICKERS CREATED BEFORE JUNE 19, 2018 (newline fix not deployed to AWS)
     BACKUP_PATH = os.path.join(BASE_DIR, 'backups/txt')
 
     write_mode = 'a' if append else 'w'
