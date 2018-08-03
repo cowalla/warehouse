@@ -1,3 +1,6 @@
+# WAREHOUSE
+A data warehouse for cryptocurrency exchange data, so you can write data down and query it later.
+
 
 ### Docker
 
