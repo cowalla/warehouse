@@ -43,7 +43,7 @@ singledispatch==3.4.0.3
 six==1.11.0
 urllib3==1.22
 websocket-client==0.40.0
-wheel==0.24.0
+wheel==0.38.1
 wrapt==1.10.11
 
 # poloniex==0.4.6
